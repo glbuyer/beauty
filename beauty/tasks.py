@@ -56,7 +56,7 @@ def match_star_by_file(image_file):
   match_star(image)
 
 def match_star_by_url(image_url):
-  print('match_star_by_url')
+  # print('match_star_by_url')
   resp = request.urlopen(image_url)
   image = np.asarray(bytearray(resp.read()), dtype='uint8')
   image = cv2.imdecode(image, cv2.IMREAD_COLOR)
