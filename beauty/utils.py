@@ -21,6 +21,11 @@ def create_pardir(outfile):
   outdir = path.dirname(outfile)
   create_dir(outdir)
 
+def display_image(image):
+  pimage = Image.fromarray(image)
+  pdraw = ImageDraw.Draw(pimage)
+  pimage.show()
+
 predictor = face_recognition.api.pose_predictor_68_point
 aligner = FaceAligner(predictor, desiredFaceWidth=256)
 def extract_feature(image, save_image=False):

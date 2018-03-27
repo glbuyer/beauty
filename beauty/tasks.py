@@ -5,6 +5,7 @@ from beauty import utils
 from beauty.config import feature_names
 
 from os import path
+from scipy import ndimage
 from urllib import request
 import numpy as np
 import cv2
@@ -52,8 +53,49 @@ def index_star():
 
 def match_star_by_file(image_file):
   # print('match_star_by_file')
-  image = face_recognition.load_image_file(image_file)
-  match_star(image)
+  try:
+    image = face_recognition.load_image_file(image_file)
+  except Exception as e:
+    response = {
+      'data': {},
+      'code': 1,
+      'message': str(e),
+    }
+    print(json.dumps(response))
+    return
+
+  try:
+    result = match_star(image)
+    response = {
+      'data': result,
+      'code': 0,
+      'message': '',
+    }
+    print(json.dumps(response))
+    return
+  except Exception as e:
+    # print(str(e))
+    pass
+
+  try:
+    image = ndimage.rotate(image, -90)
+    # utils.display_image(image)
+    result = match_star(image)
+    response = {
+      'data': result,
+      'code': 0,
+      'message': '',
+    }
+    print(json.dumps(response))
+    return
+  except Exception as e:
+    # print(str(e))
+    response = {
+      'data': {},
+      'code': 1,
+      'message': str(e),
+    }
+    print(json.dumps(response))
 
 def match_star_by_url(image_url):
   # print('match_star_by_url')
@@ -91,11 +133,12 @@ def match_star(image):
     'eye': eye_star,
     'lip': lip_star,
   }
-  print(json.dumps(result))
 
-  outfile = path.join(path.expanduser('~'), 'result.txt')
-  with open(outfile, 'w') as fout:
-    json.dump(result, fout)
+  return result
+
+  # outfile = path.join(path.expanduser('~'), 'result.txt')
+  # with open(outfile, 'w') as fout:
+  #   json.dump(result, fout)
 
 
 
