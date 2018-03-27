@@ -56,21 +56,13 @@ def match_star_by_file(image_file):
   try:
     image = face_recognition.load_image_file(image_file)
   except Exception as e:
-    response = {
-      'data': {},
-      'code': 1,
-      'message': str(e),
-    }
+    response = utils.respond_failure(str(e))
     print(json.dumps(response))
     return
 
   try:
     result = match_star(image)
-    response = {
-      'data': result,
-      'code': 0,
-      'message': '',
-    }
+    response = utils.respond_success(result)
     print(json.dumps(response))
     return
   except Exception as e:
@@ -81,28 +73,32 @@ def match_star_by_file(image_file):
     image = ndimage.rotate(image, -90)
     # utils.display_image(image)
     result = match_star(image)
-    response = {
-      'data': result,
-      'code': 0,
-      'message': '',
-    }
+    response = utils.respond_success(result)
     print(json.dumps(response))
     return
   except Exception as e:
-    # print(str(e))
-    response = {
-      'data': {},
-      'code': 1,
-      'message': str(e),
-    }
+    response = utils.respond_failure(str(e))
     print(json.dumps(response))
 
 def match_star_by_url(image_url):
   # print('match_star_by_url')
-  resp = request.urlopen(image_url)
-  image = np.asarray(bytearray(resp.read()), dtype='uint8')
-  image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-  match_star(image)
+  try:
+    resp = request.urlopen(image_url)
+    image = np.asarray(bytearray(resp.read()), dtype='uint8')
+    image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+  except Exception as e:
+    response = utils.respond_failure(str(e))
+    print(json.dumps(response))
+    return
+
+  try:
+    result = match_star(image)
+    response = utils.respond_success(result)
+    print(json.dumps(response))
+    return
+  except Exception as e:
+    response = utils.respond_failure(str(e))
+    print(json.dumps(response))
 
 def match_star(image):
   start_time = time.time()

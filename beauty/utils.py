@@ -26,6 +26,22 @@ def display_image(image):
   pdraw = ImageDraw.Draw(pimage)
   pimage.show()
 
+def respond_failure(message):
+  response = {
+    'data': {},
+    'code': 1,
+    'message': message,
+  }
+  return response
+
+def respond_success(result):
+  response = {
+    'data': result,
+    'code': 0,
+    'message': '',
+  }
+  return response
+
 predictor = face_recognition.api.pose_predictor_68_point
 aligner = FaceAligner(predictor, desiredFaceWidth=256)
 def extract_feature(image, save_image=False):
