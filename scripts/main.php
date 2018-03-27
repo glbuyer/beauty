@@ -1,6 +1,6 @@
 <?php
 $matchBinary = '/root/anaconda3/envs/py36/bin/match';
-$imgFilepath = '../data/ye.png';
+$imgFilepath = '../data/xiaojie.jpg';
 
 
 $fullCommand = sprintf('%s --image_file %s', $matchBinary, $imgFilepath);
