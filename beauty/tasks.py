@@ -82,6 +82,8 @@ def match_star_by_file(image_file):
 
 def match_star_by_url(image_url):
   # print('match_star_by_url')
+  # start_time = time.time()
+
   try:
     resp = request.urlopen(image_url)
     image = np.asarray(bytearray(resp.read()), dtype='uint8')
@@ -95,10 +97,13 @@ def match_star_by_url(image_url):
     result = match_star(image)
     response = utils.respond_success(result)
     print(json.dumps(response))
-    return
   except Exception as e:
     response = utils.respond_failure(str(e))
     print(json.dumps(response))
+    return
+
+  # duration = time.time() - start_time
+  # print('duration=%.4fs' % duration)
 
 def match_star(image):
   start_time = time.time()
