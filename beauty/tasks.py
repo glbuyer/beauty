@@ -5,8 +5,10 @@ from beauty import utils
 from beauty.config import feature_names
 
 from os import path
+from urllib import request
 import numpy as np
-import base64
+import cv2
+import face_recognition
 import os
 import json
 import pickle
@@ -48,11 +50,23 @@ def index_star():
   #   print(star_name, image_feature)
   pickle.dump(star_features, open(config.star_feature_p, 'wb'))
 
-def match_star(image_file):
+def match_star_by_file(image_file):
+  # print('match_star_by_file')
+  image = face_recognition.load_image_file(image_file)
+  match_star(image)
+
+def match_star_by_url(image_url):
+  print('match_star_by_url')
+  resp = request.urlopen(image_url)
+  image = np.asarray(bytearray(resp.read()), dtype='uint8')
+  image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+  match_star(image)
+
+def match_star(image):
   start_time = time.time()
 
   # face_feature = utils.extract_feature(image_file, save_image=True)
-  face_feature = utils.extract_feature(image_file, save_image=False)
+  face_feature = utils.extract_feature(image, save_image=False)
   star_features = pickle.load(open(config.star_feature_p, 'rb'))
 
   chin_star = utils.search_star(face_feature, star_features, feature_names[0:1])

@@ -23,16 +23,16 @@ def create_pardir(outfile):
 
 predictor = face_recognition.api.pose_predictor_68_point
 aligner = FaceAligner(predictor, desiredFaceWidth=256)
-def extract_feature(infile, save_image=False):
-  extension = 'png'
-  line_width = 2
-  filename = path.basename(infile)
-  fields = filename.split('.')
-  outfile = path.join(config.star_face_dir, '%s.%s' % (fields[0], extension))
+def extract_feature(image, save_image=False):
+  # extension = 'png'
+  # line_width = 2
+  # filename = path.basename(infile)
+  # fields = filename.split('.')
+  # outfile = path.join(config.star_face_dir, '%s.%s' % (fields[0], extension))
   # if path.isfile(outfile):
   #   return
 
-  image = face_recognition.load_image_file(infile)
+  # image = face_recognition.load_image_file(infile)
   # print(type(image), image.shape, image.dtype)
   gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
   face_locations = face_recognition.face_locations(image)
