@@ -1,7 +1,7 @@
 <?php
 $matchBinary = '/root/anaconda3/envs/py36/bin/match';
 $imgFilepath = '../data/xiaojie.jpg';
-$imgFilepath = '/var/www/glbuyer_face_features_api_server_test/storage/app/images/customerUpload/5aba318a36594.jpg'
+$imgFilepath = '/var/www/glbuyer_face_features_api_server_test/storage/app/images/customerUpload/5aba318a36594.jpg';
 $fullCommand = sprintf('%s --image_file %s', $matchBinary, $imgFilepath);
 $matchResult = shell_exec($fullCommand);
 $matchResult = json_decode($matchResult, true);
