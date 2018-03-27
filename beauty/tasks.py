@@ -93,6 +93,9 @@ def match_star(image):
   }
   print(json.dumps(result))
 
+  outfile = path.join(path.expanduser('~'), 'result.txt')
+  with open(outfile, 'w') as fout:
+    json.dump(result, fout)
 
 
 
