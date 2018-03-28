@@ -12,6 +12,7 @@ import cv2
 import dlib
 import face_recognition
 import os
+import time
 
 def create_dir(outdir):
   if not path.exists(outdir):
@@ -42,9 +43,15 @@ def respond_success(result):
   }
   return response
 
-predictor = face_recognition.api.pose_predictor_68_point
-aligner = FaceAligner(predictor, desiredFaceWidth=256)
-def extract_feature(image, save_image=False):
+def extract_feature(image, save_image=False, verbose=False):
+  signature = 'utils.extract_feature'
+  start_time = time.time()
+  predictor = face_recognition.api.pose_predictor_68_point
+  aligner = FaceAligner(predictor, desiredFaceWidth=256)
+  if verbose:
+    duration = time.time() - start_time
+    print('%s:predictor aligner=%.4fs' % (signature, duration))
+
   # extension = 'png'
   # line_width = 2
   # filename = path.basename(infile)
@@ -55,6 +62,7 @@ def extract_feature(image, save_image=False):
 
   # image = face_recognition.load_image_file(infile)
   # print(type(image), image.shape, image.dtype)
+  start_time = time.time()
   gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
   face_locations = face_recognition.face_locations(image)
   if len(face_locations) == 0:
@@ -62,17 +70,28 @@ def extract_feature(image, save_image=False):
   face_location = face_locations[0]
   top, right, bottom, left = face_location
   rect = dlib.rectangle(left=left, top=top, right=right, bottom=bottom)
-  image = aligner.align(image, gray, rect)
+  if verbose:
+    duration = time.time() - start_time
+    print('%s:face location=%.4fs' % (signature, duration))
 
+  start_time = time.time()
+  image = aligner.align(image, gray, rect)
+  if verbose:
+    duration = time.time() - start_time
+    print('%s:align image=%.4fs' % (signature, duration))
+
+  start_time = time.time()
   face_locations = face_recognition.face_locations(image)[:1]
   face_landmarks = face_recognition.face_landmarks(image, face_locations=face_locations)
   face_location, face_landmark = face_locations[0], face_landmarks[0]
+  if verbose:
+    duration = time.time() - start_time
+    print('%s:face landmark=%.4fs' % (signature, duration))
 
-
+  start_time = time.time()
   # for feature_name in feature_names:
   #   print('#%s=%d' % (feature_name, len(face_landmark[feature_name])))
   top, right, bottom, left = face_location
-
   # rescale location to include landmark
   half_width = (right - left) / 2.0
   half_height = (bottom - top) / 2.0
@@ -91,7 +110,11 @@ def extract_feature(image, save_image=False):
   # face_location = top, right, bottom, left
   width = right - left
   height = bottom - top
+  if verbose:
+    duration = time.time() - start_time
+    print('%s:rescale face location=%.4fs' % (signature, duration))
 
+  start_time = time.time()
   face_feature = {}
   for feature_name in feature_names:
     feature = []
@@ -107,15 +130,20 @@ def extract_feature(image, save_image=False):
     (left, bottom),
     (left, top)
   ]
+  if verbose:
+    duration = time.time() - start_time
+    print('%s:extract features=%.4fs' % (signature, duration))
+
   if save_image:
+    line_width = 2
     pimage = Image.fromarray(image)
     pdraw = ImageDraw.Draw(pimage)
     for feature_name in feature_names:
       pdraw.line(face_landmark[feature_name], width=line_width)
     pdraw.line(location_rect, width=line_width)
-    # pimage.show()
-    create_pardir(outfile)
-    pimage.save(outfile, extension)
+    pimage.show()
+    # create_pardir(outfile)
+    # pimage.save(outfile, extension)
 
   return face_feature
 

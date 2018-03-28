@@ -10,9 +10,10 @@ from urllib import request
 import numpy as np
 import cv2
 import face_recognition
-import os
 import json
+import os
 import pickle
+import sys
 import time
 import traceback
 
@@ -52,7 +53,7 @@ def index_star():
   #   print(star_name, image_feature)
   pickle.dump(star_features, open(config.star_feature_p, 'wb'))
 
-def match_star_by_file(image_file, verbose=False):
+def match_star_by_file(image_file, save_image=False, verbose=False):
   # print('match_star_by_file')
   try:
     start_time = time.time()
@@ -61,21 +62,26 @@ def match_star_by_file(image_file, verbose=False):
       duration = time.time() - start_time
       print('load image file duration=%.4fs' % (duration))
   except Exception as e:
-    response = utils.respond_failure(str(e))
-    print(json.dumps(response))
-    return
+    message = traceback.format_exc()
+    response = utils.respond_failure(message)
+    # print(json.dumps(response))
+    # return
+    return response
 
   try:
     # start_time = time.time()
-    result = match_star(image, verbose=verbose)
+    result = match_star(image, save_image=save_image, verbose=verbose)
     response = utils.respond_success(result)
     # if verbose:
     #   duration = time.time() - start_time
     #   print('match star duration=%.4fs' % (duration))
-    print(json.dumps(response))
+    # print(json.dumps(response))
+    # return response
   except Exception as e:
-    response = utils.respond_failure(str(e))
-    print(json.dumps(response))
+    message = traceback.format_exc()
+    response = utils.respond_failure(message)
+    # print(json.dumps(response))
+  return response
 
 def match_star_by_url(image_url):
   # print('match_star_by_url')
@@ -106,13 +112,13 @@ def match_star_by_url(image_url):
   # duration = time.time() - start_time
   # print('duration=%.4fs' % duration)
 
-def match_star(image, verbose=False):
+def match_star(image, verbose=False, save_image=False):
   # face_feature = utils.extract_feature(image_file, save_image=True)
-  start_time = time.time()
-  face_feature = utils.extract_feature(image, save_image=False)
-  if verbose:
-    duration = time.time() - start_time
-    print('match star extract feature duration=%.4fs' % (duration))
+  # start_time = time.time()
+  face_feature = utils.extract_feature(image, save_image=save_image, verbose=verbose)
+  # if verbose:
+  #   duration = time.time() - start_time
+  #   print('match star extract feature duration=%.4fs' % (duration))
 
   star_features = pickle.load(open(config.star_feature_p, 'rb'))
 
