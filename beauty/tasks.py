@@ -14,6 +14,7 @@ import os
 import json
 import pickle
 import time
+import traceback
 
 def index_star():
   image_files = []
@@ -51,31 +52,27 @@ def index_star():
   #   print(star_name, image_feature)
   pickle.dump(star_features, open(config.star_feature_p, 'wb'))
 
-def match_star_by_file(image_file):
+def match_star_by_file(image_file, verbose=False):
   # print('match_star_by_file')
   try:
+    start_time = time.time()
     image = face_recognition.load_image_file(image_file)
+    if verbose:
+      duration = time.time() - start_time
+      print('load image file duration=%.4fs' % (duration))
   except Exception as e:
     response = utils.respond_failure(str(e))
     print(json.dumps(response))
     return
 
   try:
-    result = match_star(image)
+    # start_time = time.time()
+    result = match_star(image, verbose=verbose)
     response = utils.respond_success(result)
+    # if verbose:
+    #   duration = time.time() - start_time
+    #   print('match star duration=%.4fs' % (duration))
     print(json.dumps(response))
-    return
-  except Exception as e:
-    # print(str(e))
-    pass
-
-  try:
-    image = ndimage.rotate(image, -90)
-    # utils.display_image(image)
-    result = match_star(image)
-    response = utils.respond_success(result)
-    print(json.dumps(response))
-    return
   except Exception as e:
     response = utils.respond_failure(str(e))
     print(json.dumps(response))
@@ -89,6 +86,8 @@ def match_star_by_url(image_url):
     image = np.asarray(bytearray(resp.read()), dtype='uint8')
     image = cv2.imdecode(image, cv2.IMREAD_COLOR)
   except Exception as e:
+    # print('asdfasdf')
+    # traceback.print_exc()
     response = utils.respond_failure(str(e))
     print(json.dumps(response))
     return
@@ -98,6 +97,8 @@ def match_star_by_url(image_url):
     response = utils.respond_success(result)
     print(json.dumps(response))
   except Exception as e:
+    print('asdfasdf')
+    traceback.print_exc()
     response = utils.respond_failure(str(e))
     print(json.dumps(response))
     return
@@ -105,35 +106,54 @@ def match_star_by_url(image_url):
   # duration = time.time() - start_time
   # print('duration=%.4fs' % duration)
 
-def match_star(image):
-  start_time = time.time()
-
+def match_star(image, verbose=False):
   # face_feature = utils.extract_feature(image_file, save_image=True)
+  start_time = time.time()
   face_feature = utils.extract_feature(image, save_image=False)
+  if verbose:
+    duration = time.time() - start_time
+    print('match star extract feature duration=%.4fs' % (duration))
+
   star_features = pickle.load(open(config.star_feature_p, 'rb'))
 
-  chin_star = utils.search_star(face_feature, star_features, feature_names[0:1])
+  start_time = time.time()
+  feat_dict = {}
+  
+  chin_feat = utils.search_star(face_feature, star_features, feature_names[0:1])
   # print('chin=%s' % (chin_star.split('.')[0]))
-  eyebrow_star = utils.search_star(face_feature, star_features, feature_names[1:3])
+  feat_dict['chin'] = chin_feat
+  
+  eyebrow_feat = utils.search_star(face_feature, star_features, feature_names[1:3])
   # print('eyebrow=%s' % (eyebrow_star.split('.')[0]))
-  nose_star = utils.search_star(face_feature, star_features, feature_names[3:5])
+  feat_dict['eyebrow'] = eyebrow_feat
+
+  nose_feat = utils.search_star(face_feature, star_features, feature_names[3:5])
   # print('nose=%s' % (nose_star.split('.')[0]))
-  eye_star = utils.search_star(face_feature, star_features, feature_names[5:7])
+  feat_dict['nose'] = nose_feat
+
+  eye_feat = utils.search_star(face_feature, star_features, feature_names[5:7])
   # print('eye=%s' % (eye_star.split('.')[0]))
-  lip_star = utils.search_star(face_feature, star_features, feature_names[7:9])
+  feat_dict['eye'] = eye_feat
+
+  lip_feat = utils.search_star(face_feature, star_features, feature_names[7:9])
   # print('lip=%s' % (lip_star.split('.')[0]))
+  feat_dict['lip'] = lip_feat
+
+  if verbose:
+    duration = time.time() - start_time
+    print('match star search star duration=%.4fs' % (duration))
 
   end_time = time.time()
   duration = end_time - start_time
   # print('duration=%.4fs' % (duration))
 
-  result = {
-    'chin': chin_star,
-    'eyebrow': eyebrow_star,
-    'nose': nose_star,
-    'eye': eye_star,
-    'lip': lip_star,
-  }
+  result = {}
+  for name, feat in feat_dict.items():
+    starname, distance = feat
+    result[name] = {
+      'starname': starname,
+      'distance': distance,
+    }
 
   return result
 

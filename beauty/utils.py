@@ -139,7 +139,7 @@ def search_star(face_feature, star_features, feature_names):
       best_star = star_name
   # print('%s %.4f' % (best_star, best_dist))
   star_name = best_star.split('.')[0]
-  return star_name
+  return star_name, best_dist
 
 
 
