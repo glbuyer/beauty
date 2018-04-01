@@ -27,6 +27,15 @@ def display_image(image):
   pdraw = ImageDraw.Draw(pimage)
   pimage.show()
 
+def get_star_name(filepath):
+  filename = path.basename(filepath)
+  star_name = filename.split('.')[0]
+  return star_name
+
+################################################################
+# server
+################################################################
+
 def respond_failure(message):
   response = {
     'data': {},
@@ -42,6 +51,16 @@ def respond_success(result):
     'message': '',
   }
   return response
+
+################################################################
+# facial features and encoding
+################################################################
+
+def extract_features(image):
+  pass
+
+def extract_encoding(image):
+  pass
 
 def extract_feature(image, save_image=False, verbose=False):
   signature = 'utils.extract_feature'
@@ -83,6 +102,11 @@ def extract_feature(image, save_image=False, verbose=False):
   start_time = time.time()
   face_locations = face_recognition.face_locations(image)[:1]
   face_landmarks = face_recognition.face_landmarks(image, face_locations=face_locations)
+
+  # TODO
+  face_encoding = face_recognition.face_encodings(image, known_face_locations=face_locations)[0]
+  # print('face encoding', face_encoding.shape, face_encoding.dtype)
+
   face_location, face_landmark = face_locations[0], face_landmarks[0]
   if verbose:
     duration = time.time() - start_time
@@ -146,6 +170,10 @@ def extract_feature(image, save_image=False, verbose=False):
     # pimage.save(outfile, extension)
 
   return face_feature
+
+################################################################
+# match star
+################################################################
 
 def get_feature(face_feature, feature_names):
   feature = []

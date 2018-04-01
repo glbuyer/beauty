@@ -17,7 +17,8 @@ import sys
 import time
 import traceback
 
-def index_star():
+
+def index_star(extract_function, outfile):
   image_files = []
   image_extensions = ['jfif', 'jpg', 'jpeg', 'png', 'JPG']
   star_image_dir = config.star_image_dir
@@ -37,21 +38,19 @@ def index_star():
       image_files.append(image_file)
   print('#image=%d' % (len(image_files)))
 
-  star_features = {}
+  star_faces = {}
   for idx_image, image_file in enumerate(image_files):
-    star_name = path.basename(image_file)
-    star_feature = utils.extract_feature(image_file, save_image=True)
+    image = face_recognition.load_image_file(image_file)
+    star_face = extract_function(image)
     num_image = idx_image + 1
     if (num_image % 10) == 0:
       print('#image=%d' % (num_image))
-    # if num_image >= 100:
-    #   break
-    if star_feature == None:
+    star_name = utils.get_star_name(image_file)
+    if star_face == None:
       print('fail %s' % (star_name))
-    star_features[star_name] = star_feature
-  # for star_name, image_feature in star_features.items():
-  #   print(star_name, image_feature)
-  pickle.dump(star_features, open(config.star_feature_p, 'wb'))
+    star_faces[star_name] = star_face
+  pickle.dump(star_faces, open(outfile, 'wb'))
+
 
 def match_star_by_file(image_file, save_image=False, verbose=False):
   # print('match_star_by_file')
@@ -83,6 +82,7 @@ def match_star_by_file(image_file, save_image=False, verbose=False):
     # print(json.dumps(response))
   return response
 
+
 def match_star_by_url(image_url):
   # print('match_star_by_url')
   # start_time = time.time()
@@ -111,6 +111,7 @@ def match_star_by_url(image_url):
 
   # duration = time.time() - start_time
   # print('duration=%.4fs' % duration)
+
 
 def match_star(image, verbose=False, save_image=False):
   # face_feature = utils.extract_feature(image_file, save_image=True)
