@@ -14,27 +14,33 @@ import face_recognition
 import os
 import time
 
+
 def create_dir(outdir):
   if not path.exists(outdir):
     os.makedirs(outdir)
 
+
 def create_pardir(outfile):
   outdir = path.dirname(outfile)
   create_dir(outdir)
+
 
 def display_image(image):
   pimage = Image.fromarray(image)
   pdraw = ImageDraw.Draw(pimage)
   pimage.show()
 
+
 def get_star_name(filepath):
   filename = path.basename(filepath)
   star_name = filename.split('.')[0]
   return star_name
 
+
 ################################################################
 # server
 ################################################################
+
 
 def respond_failure(message):
   response = {
@@ -44,6 +50,7 @@ def respond_failure(message):
   }
   return response
 
+
 def respond_success(result):
   response = {
     'data': result,
@@ -52,15 +59,56 @@ def respond_success(result):
   }
   return response
 
+
 ################################################################
 # facial features and encoding
 ################################################################
 
-def extract_features(image):
+
+def get_aligned_face(image, verbose=False):
+  signature = 'utils.get_aligned_face'
+  start_time = time.time()
+  predictor = face_recognition.api.pose_predictor_68_point
+  aligner = FaceAligner(predictor, desiredFaceWidth=256)
+  if verbose:
+    duration = time.time() - start_time
+    print('%s:initialize aligner=%.4fs' % (signature, duration))
+
+  start_time = time.time()
+  gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+  face_locations = face_recognition.face_locations(image)
+  if len(face_locations) == 0:
+    return None
+  face_location = face_locations[0]
+  top, right, bottom, left = face_location
+  rect = dlib.rectangle(left=left, top=top, right=right, bottom=bottom)
+  if verbose:
+    duration = time.time() - start_time
+    print('%s:locate face=%.4fs' % (signature, duration))
+
+  start_time = time.time()
+  image = aligner.align(image, gray, rect)
+  if verbose:
+    duration = time.time() - start_time
+    print('%s:align face=%.4fs' % (signature, duration))
+  return image
+
+def extract_features(image, verbose=False):
   pass
 
-def extract_encoding(image):
-  pass
+def extract_encoding(image, verbose=False):
+  signature = 'utils.extract_encoding'
+  image = get_aligned_face(image, verbose=verbose)
+  if image is None:
+    return None
+  # display_image(image)
+
+  start_time = time.time()
+  face_encoding = face_recognition.face_encodings(image)[0]
+  if verbose:
+    duration = time.time() - start_time
+    print('%s:encode face=%.4fs' % (signature, duration))
+  return face_encoding
 
 def extract_feature(image, save_image=False, verbose=False):
   signature = 'utils.extract_feature'
@@ -104,7 +152,7 @@ def extract_feature(image, save_image=False, verbose=False):
   face_landmarks = face_recognition.face_landmarks(image, face_locations=face_locations)
 
   # TODO
-  face_encoding = face_recognition.face_encodings(image, known_face_locations=face_locations)[0]
+  # face_encoding = face_recognition.face_encodings(image, known_face_locations=face_locations)[0]
   # print('face encoding', face_encoding.shape, face_encoding.dtype)
 
   face_location, face_landmark = face_locations[0], face_landmarks[0]

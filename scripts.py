@@ -12,16 +12,17 @@ def index():
   parser = ArgumentParser()
   parser.add_argument('-f', '--features', action='store_true')
   parser.add_argument('-e', '--encoding', action='store_true')
+  parser.add_argument('-v', '--verbose', action='store_true')
   args = parser.parse_args()
   print('features=%s encoding=%s' % (args.features, args.encoding))
 
   if args.features:
     extract_function = getattr(utils, 'extract_features')
-    tasks.index_star(extract_function, config.star_features_p)
+    tasks.index_star(extract_function, config.star_features_p, verbose=args.verbose)
 
   if args.encoding:
     extract_function = getattr(utils, 'extract_encoding')
-    tasks.index_star(extract_function, config.star_encoding_p)
+    tasks.index_star(extract_function, config.star_encoding_p, verbose=args.verbose)
 
 
 def match():

@@ -11,6 +11,7 @@ import numpy as np
 import cv2
 import face_recognition
 import json
+import operator
 import os
 import pickle
 import sys
@@ -18,7 +19,9 @@ import time
 import traceback
 
 
-def index_star(extract_function, outfile):
+def index_star(extract_function, outfile, verbose=False):
+  signature = 'tasks.index_star'
+
   image_files = []
   image_extensions = ['jfif', 'jpg', 'jpeg', 'png', 'JPG']
   star_image_dir = config.star_image_dir
@@ -32,22 +35,25 @@ def index_star(extract_function, outfile):
           is_image = True
           break
       if not is_image:
-        print('%s is not image' % (filename))
+        print('%s:%s is not image' % (signature, filename))
         continue
       image_file = path.join(par_dir, filename)
       image_files.append(image_file)
-  print('#image=%d' % (len(image_files)))
+  print('%s:#image=%d' % (signature, len(image_files)))
 
   star_faces = {}
   for idx_image, image_file in enumerate(image_files):
-    image = face_recognition.load_image_file(image_file)
-    star_face = extract_function(image)
-    num_image = idx_image + 1
-    if (num_image % 10) == 0:
-      print('#image=%d' % (num_image))
     star_name = utils.get_star_name(image_file)
-    if star_face == None:
-      print('fail %s' % (star_name))
+    if verbose:
+      print('%s:index %s' % (signature, star_name))
+    image = face_recognition.load_image_file(image_file)
+    star_face = extract_function(image, verbose=verbose)
+    if star_face is None:
+      print('%s:skip %s' % (signature, star_name))
+      continue
+    num_image = idx_image + 1
+    if (num_image % 20) == 0:
+      print('#image=%d' % (num_image))
     star_faces[star_name] = star_face
   pickle.dump(star_faces, open(outfile, 'wb'))
 
@@ -79,6 +85,7 @@ def match_star_by_file(image_file, save_image=False, verbose=False):
   except Exception as e:
     message = traceback.format_exc()
     response = utils.respond_failure(message)
+    print(message)
     # print(json.dumps(response))
   return response
 
@@ -114,6 +121,25 @@ def match_star_by_url(image_url):
 
 
 def match_star(image, verbose=False, save_image=False):
+  star_encoding = pickle.load(open(config.star_encoding_p, 'rb'))
+  face_encoding = utils.extract_encoding(image, verbose=verbose)
+  from scipy.spatial import distance
+  star_dist_dict = {}
+  for star, encoding in star_encoding.items():
+    dist = distance.euclidean(face_encoding, encoding)
+    star_dist_dict[star] = dist
+  star_dist_list = sorted(star_dist_dict.items(), key=operator.itemgetter(1))
+  names = ['chin', 'eye', 'eyebrow', 'lip', 'nose']
+  result = {}
+  for name, star_dist in zip(names, star_dist_list):
+    star, dist = star_dist
+    result[name] = {
+      'starname': star,
+      'distance': dist,
+    }
+  # print(result)
+  return result
+
   # face_feature = utils.extract_feature(image_file, save_image=True)
   # start_time = time.time()
   face_feature = utils.extract_feature(image, save_image=save_image, verbose=verbose)

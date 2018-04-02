@@ -3,7 +3,7 @@ curl \
 -XPOST 'http://localhost:3000' \
 -d '
 {
-  "image_file" : "/root/beauty/data/xiaojie.jpg"
+  "image_file" : "/root/beauty/data/xiaojie_0.jpg"
 }
 '
 
@@ -12,7 +12,8 @@ curl \
 -XPOST 'http://localhost:3000' \
 -d '
 {
-  "image_file" : "/Users/xiaojiew1/Projects/beauty/data/error.jpg",
-  "image_url": ""
+  "image_file" : "/root/beauty/data/xiaojie_1.jpg"
 }
 '
+
+scp root@47.91.47.47:~/
