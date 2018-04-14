@@ -112,7 +112,7 @@ def match_star_by_file(image_file, save_image=False, verbose=False):
     print('file=%s dist=%.4f' % (path.basename(image_file), dist))
     if dist <= 2.00:
       result['number'] = 5
-    elif dist <= 2.40:
+    elif dist <= 2.35:
       result['number'] = 4
     elif dist <= 2.60:
       result['number'] = 3
