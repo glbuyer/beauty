@@ -1,0 +1,3 @@
+file=beauty_0.jpg dist=2.1808
+file=normal_0.jpg dist=2.3976
+file=ugly_0.jpg dist=2.7476
