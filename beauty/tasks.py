@@ -115,9 +115,9 @@ def match_star_by_file(image_file, save_image=False, verbose=False):
       result['number'] = 5
     elif dist <= 2.3750:
       result['number'] = 4
-    elif dist <= 2.3850:
+    elif dist <= 2.6250:
       result['number'] = 3
-    elif dist <= 2.3960:
+    elif dist <= 2.9960:
       result['number'] = 2
     else:
       result['number'] = 1
