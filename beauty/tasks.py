@@ -110,13 +110,13 @@ def match_star_by_file(image_file, save_image=False, verbose=False):
     dist_list = [star_dist['distance'] for _, star_dist in result.items()]
     dist = sum(dist_list)
     print('file=%s dist=%.4f' % (path.basename(image_file), dist))
-    if dist <= 2.20:
+    if dist <= 2.00:
       result['number'] = 5
-    elif dist <= 2.60:
+    elif dist <= 2.20:
       result['number'] = 4
-    elif dist <= 3.00:
+    elif dist <= 2.40:
       result['number'] = 3
-    elif dist <= 3.40:
+    elif dist <= 2.80:
       result['number'] = 2
     else:
       result['number'] = 1
@@ -132,6 +132,7 @@ def match_star_by_file(image_file, save_image=False, verbose=False):
     response = utils.respond_failure(message)
     # print(message)
     # print(json.dumps(response))
+  print(response)
   return response
 
 
