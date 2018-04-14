@@ -7,6 +7,7 @@ from beauty.config import feature_names
 from os import path
 from scipy import ndimage
 from urllib import request
+from sys import stdout
 import numpy as np
 import cv2
 import face_recognition
@@ -17,28 +18,13 @@ import pickle
 import sys
 import time
 import traceback
+from PIL import Image
 
 
 def index_star(extract_function, outfile, verbose=False):
   signature = 'tasks.index_star'
 
-  image_files = []
-  image_extensions = ['jfif', 'jpg', 'jpeg', 'png', 'JPG']
-  star_image_dir = config.star_image_dir
-  for par_dir, dirnames, filenames in os.walk(star_image_dir):
-    if len(filenames) == 0:
-      continue
-    for filename in filenames:
-      is_image = False
-      for image_extension in image_extensions:
-        if filename.endswith(image_extension):
-          is_image = True
-          break
-      if not is_image:
-        print('%s:%s is not image' % (signature, filename))
-        continue
-      image_file = path.join(par_dir, filename)
-      image_files.append(image_file)
+  image_files = utils.get_star_images()
   print('%s:#image=%d' % (signature, len(image_files)))
 
   star_faces = {}
@@ -58,6 +44,49 @@ def index_star(extract_function, outfile, verbose=False):
   pickle.dump(star_faces, open(outfile, 'wb'))
 
 
+def posit_star():
+  signature = 'tasks.posit_star'
+  
+  utils.create_dir(config.crop_face_dir)
+
+  image_files = utils.get_star_images(path.join(config.data_dir, 'compress'))
+  print('%s:#image=%d' % (signature, len(image_files)))
+
+  for idx_image, image_file in enumerate(image_files):
+    # print(path.basename(image_file))
+    image = face_recognition.load_image_file(image_file)
+    pimage = Image.fromarray(image)
+    width, height = pimage.size
+    face_locations = face_recognition.face_locations(image)
+    if len(face_locations) == 0:
+      print(path.basename(image_file))
+      continue
+    face_location = face_locations[0]
+    top, right, bottom, left = face_location
+    center_x = (right + left) / 2.0
+    center_y = (top + bottom) / 2.0
+    half_width = (right - left) / 2.0
+    half_height = (bottom - top) / 2.0
+    scale = 2.1
+    half_len = max(scale * half_width, scale * half_height)
+    half_len = min(half_len, center_x - 0.0, width - center_x)
+    half_len = min(half_len, center_y - 0.0, height - center_y)
+
+
+    left, right = center_x - half_len, center_x + half_len
+    top, bottom = center_y - half_len, center_y + half_len
+
+    # print(left, top, right, bottom)
+    pimage = pimage.crop((left, top, right, bottom))
+    # pimage.show()
+    filename = path.basename(image_file)
+    filename = '%s.jpg' % filename.split('.')[0]
+    outfile = path.join(config.crop_face_dir, filename)
+    pimage.save(outfile)
+    num_image = idx_image + 1
+    if (num_image % 20) == 0:
+      print('#image=%d' % (num_image))
+
 def match_star_by_file(image_file, save_image=False, verbose=False):
   # print('match_star_by_file')
   try:
@@ -75,7 +104,23 @@ def match_star_by_file(image_file, save_image=False, verbose=False):
 
   try:
     # start_time = time.time()
+    # stdout.write('file=%s' % (path.basename(image_file)))
     result = match_star(image, save_image=save_image, verbose=verbose)
+
+    dist_list = [star_dist['distance'] for _, star_dist in result.items()]
+    dist = sum(dist_list)
+    print('file=%s dist=%.4f' % (path.basename(image_file), dist))
+    if dist <= 2.20:
+      result['number'] = 5
+    elif dist <= 2.60:
+      result['number'] = 4
+    elif dist <= 3.00:
+      result['number'] = 3
+    elif dist <= 3.40:
+      result['number'] = 2
+    else:
+      result['number'] = 1
+
     response = utils.respond_success(result)
     # if verbose:
     #   duration = time.time() - start_time
@@ -85,7 +130,7 @@ def match_star_by_file(image_file, save_image=False, verbose=False):
   except Exception as e:
     message = traceback.format_exc()
     response = utils.respond_failure(message)
-    print(message)
+    # print(message)
     # print(json.dumps(response))
   return response
 
@@ -129,6 +174,11 @@ def match_star(image, verbose=False, save_image=False):
     dist = distance.euclidean(face_encoding, encoding)
     star_dist_dict[star] = dist
   star_dist_list = sorted(star_dist_dict.items(), key=operator.itemgetter(1))
+  
+  # dist_list = [dist for star, dist in star_dist_list]
+  # dist = sum(dist_list) / len(dist_list)
+  # stdout.write(' dist=%.4f\n' % dist)
+  
   names = ['chin', 'eye', 'eyebrow', 'lip', 'nose']
   result = {}
   for name, star_dist in zip(names, star_dist_list):

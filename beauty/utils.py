@@ -37,6 +37,27 @@ def get_star_name(filepath):
   return star_name
 
 
+def get_star_images(star_image_dir):
+  signature = 'utils.get_star_images'
+  image_files = []
+  image_extensions = ['jfif', 'jpg', 'jpeg', 'png', 'JPG']
+  # star_image_dir = config.star_image_dir
+  for par_dir, dirnames, filenames in os.walk(star_image_dir):
+    if len(filenames) == 0:
+      continue
+    for filename in filenames:
+      is_image = False
+      for image_extension in image_extensions:
+        if filename.endswith(image_extension):
+          is_image = True
+          break
+      if not is_image:
+        print('%s:%s is not image' % (signature, filename))
+        continue
+      image_file = path.join(par_dir, filename)
+      image_files.append(image_file)
+  return image_files
+
 ################################################################
 # server
 ################################################################

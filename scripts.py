@@ -41,7 +41,8 @@ def match():
   else:
     print(json.dumps({'scripts.match':'cannot handle'}))
 
-
+def posit():
+  tasks.posit_star()
 
 
 

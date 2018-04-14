@@ -3,7 +3,7 @@ curl \
 -XPOST 'http://localhost:3000' \
 -d '
 {
-  "image_file" : "/root/beauty/data/xiaojie_0.jpg"
+  "image_file" : "/root/beauty/data/xiaojie_1.jpg"
 }
 '
 
@@ -12,8 +12,21 @@ curl \
 -XPOST 'http://localhost:3000' \
 -d '
 {
-  "image_file" : "/root/beauty/data/xiaojie_1.jpg"
+  "image_file" : "/Users/xiaojiew1/Projects/beauty/data/xiaojie_1.jpg"
 }
 '
 
-scp root@47.91.47.47:~/
+curl \
+-H 'Content-Type: application/json' \
+-XPOST 'http://localhost:3000' \
+-d '
+{
+  "image_file" : "/Users/xiaojiew1/Projects/beauty/data/img_2345.jpg"
+}
+'
+
+
+scp data/xiaojie_1.jpg root@47.91.47.47:/root/beauty/data
+scp data/xiaojie_2.jpg root@47.91.47.47:/root/beauty/data
+scp data/star_encoding.p root@47.91.47.47:/root/beauty/data
+

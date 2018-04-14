@@ -11,6 +11,7 @@ setup(
     'console_scripts': [
         'index=scripts:index',
         'match=scripts:match',
+        'posit=scripts:posit',
     ]
   },
 )
