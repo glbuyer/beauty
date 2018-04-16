@@ -21,7 +21,7 @@ curl \
 -XPOST 'http://localhost:3000' \
 -d '
 {
-  "image_file" : "/Users/xiaojiew1/Projects/beauty/data/img_2345.jpg"
+  "image_file" : "/Users/xiaojiew1/Projects/beauty/data/img_2434.jpg"
 }
 '
 
