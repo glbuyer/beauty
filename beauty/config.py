@@ -10,6 +10,8 @@ star_face_dir = path.join(data_dir, 'star_face')
 crop_face_dir = path.join(data_dir, 'crop_face')
 star_features_p = path.join(data_dir, 'star_features.p')
 star_encoding_p = path.join(data_dir, 'star_encoding.p')
+logs_dir = path.join(proj_dir, 'logs')
+dist_filepath = path.join(logs_dir, 'dist.log')
 
 feature_names = [
   'chin',
