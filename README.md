@@ -24,3 +24,14 @@ https://stackoverflow.com/questions/14047979/executing-python-script-in-php-and-
 sudo apt-get install build-essential cmake
 sudo apt-get install libgtk-3-dev
 sudo apt-get install libboost-all-dev
+
+
+python get-pip.py # https://bootstrap.pypa.io/get-pip.py
+pip install virtualenv
+virtualenv -p /root/anaconda3/envs/py36/bin/python3.6 venv
+pip install --ignore-installed -r requirements.txt
+
+
+
+
+
