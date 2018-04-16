@@ -1,4 +1,4 @@
-from app import application
+from beauty import server
 
 if __name__ == "__main__":
-  application.run()
+  server.run()

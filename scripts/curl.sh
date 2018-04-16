@@ -25,8 +25,8 @@ curl \
 }
 '
 
-curl \
--XGET 'http://localhost:5000'
+curl -XGET 'http://localhost:5000'
+curl -XGET 'http://localhost:8000'
 
 
 scp data/xiaojie_1.jpg root@47.91.47.47:/root/beauty/data
