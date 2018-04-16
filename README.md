@@ -28,8 +28,16 @@ sudo apt-get install libboost-all-dev
 
 python get-pip.py # https://bootstrap.pypa.io/get-pip.py
 pip install virtualenv
-virtualenv -p /root/anaconda3/envs/py36/bin/python3.6 venv
+<!-- virtualenv -p /root/anaconda3/envs/py36/bin/python3.6 venv -->
+sudo apt-get install python3-dev
+virtualenv -p python3 venv
+pip install uwsgi
 pip install --ignore-installed -r requirements.txt
+
+<!-- Could not reliably determine the server's fully qualified domain name -->
+vi /etc/apache2/conf-available/fqdn.conf # ServerName localhost
+sudo a2enconf fqdn
+
 
 
 

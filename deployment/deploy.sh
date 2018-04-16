@@ -1,17 +1,23 @@
+# sudo apt-get update
+# sudo apt-get install apache2
+
+# sudo apt-get install libapache2-mod-wsgi
+# sudo a2enmod wsgi
+
 # vi /etc/apache2/ports.conf
 # Listen 3000
 
 # vi /etc/hosts
-# 127.0.0.1       search.com
+# 127.0.0.1       beauty.com
 
-# sudo cp search.com.conf /etc/apache2/sites-available
+# sudo cp beauty.com.conf /etc/apache2/sites-available
 
-# sudo mkdir -p /var/www/search.com/logs
-# sudo chown -R www-data:www-data /var/www/search.com
+# sudo mkdir -p /var/www/beauty.com/logs
+# sudo chown -R www-data:www-data /var/www/beauty.com
 
-sudo cp -r . /var/www/search.com
+sudo cp -r . /var/www/beauty.com
 
-# a2ensite search.com.conf
+# a2ensite beauty.com.conf
 # service apache2 reload
 
 # optional
@@ -19,10 +25,9 @@ sudo cp -r . /var/www/search.com
 # apachectl stop
 # service apache2 start
 
-# celery mac
-# /usr/local/sbin/rabbitmqctl status
-# /usr/local/sbin/rabbitmq-server start
-# celery worker -A utils.celery --loglevel=info --logfile=celery.log
+# service apache2 status
+# /etc/init.d/apache2 start
+# /etc/init.d/apache2 reload
 
 
 
