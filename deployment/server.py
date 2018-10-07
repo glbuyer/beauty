@@ -32,4 +32,4 @@ def index():
 # python server.py
 if __name__ == '__main__':
     # server.run(host='0.0.0.0', port=3000, threaded=True)
-    server.run(debug=True, port=3000, threaded=True)
+    server.run(debug=True, port=5000, threaded=True)
