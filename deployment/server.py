@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 
-from beauty import tasks
-from beauty import utils
+import tasks
+import utils
 
 from sys import path
 from flask import Flask
