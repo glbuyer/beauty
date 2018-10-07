@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 
-from beauty import config
-from beauty.config import feature_names
+import config
+from config import feature_names
 
 from os import path
 from scipy.spatial import distance

@@ -1,8 +1,8 @@
 # -*- coding: utf8 -*-
 
-from beauty import config
-from beauty import utils
-from beauty.config import feature_names
+import config
+import utils
+from config import feature_names
 
 from os import path
 from scipy import ndimage
